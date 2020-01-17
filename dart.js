@@ -1,6 +1,5 @@
 window.addEventListener('load', generate_buttons());
 
-
 function generate_buttons(){
     add_player();
     selected_player=document.getElementById('player1')
@@ -36,19 +35,65 @@ function decrease_point(){
 
 
 function add_player(){
-    players_container=document.getElementById('players_container');
-    number_of_players = players_container.children.length;
-    console.log(number_of_players)
-    new_player = document.createElement('DIV')
-    new_player.id='player' + number_of_players.toString()
-    new_player.classList.add('player_container')
-    player_label = document.createElement('DIV')
-    player_label.innerHTML='Player' + number_of_players.toString()
-    player_score=document.createElement('DIV')
-    player_score.innerHTML='301'
-    new_player.appendChild(player_label)
-    new_player.appendChild(player_score)
-    players_container.appendChild(new_player)
-    console.log('add player done')
+    if(readCookie('players') == null){
+        setCookie('players', [])
+    }
+    players = readCookie('players');
+    _name =  prompt("Please enter your name", "player" + players.length);
+    new_player = {name:_name, score:'301'};
+    players.push(new_player);
+    setCookie('players',players);
+    update_players_gui()
+    console.log('adding player done')
 }
 
+function update_players_gui(){
+    players_container=document.getElementById('players_container');
+    while (players_container.firstChild) {
+        players_container.removeChild(players_container.firstChild);
+      }
+    players=readCookie('players');
+    for(player in players){
+        console.log(player)
+        new_player = document.createElement('DIV')
+        new_player.id=player.name;
+        new_player.classList.add('player_container')
+        player_label = document.createElement('INPUT')
+        player_label.value=player.name;
+        player_score=document.createElement('INPUT')
+        player_score.innerHTML=player.score;
+        new_player.appendChild(player_label)
+        new_player.appendChild(player_score)
+        players_container.appendChild(new_player)
+        console.log('add player done')
+    }
+}
+
+function setCookie(name, value) {
+    var cookie = [
+        name,
+        '=',
+        JSON.stringify(value)
+    ].join('');
+    document.cookie = cookie;
+}
+
+function readCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) {
+            return JSON.parse(
+                c.substring(nameEQ.length, c.length)
+            );
+        }
+    }
+    return null;
+}
+
+function resetPlayers(){
+    setCookie('players', []);
+    update_players_gui()
+}
