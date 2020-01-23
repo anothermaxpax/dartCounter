@@ -20,6 +20,17 @@ function generate_buttons() {
         }
         button_container.appendChild(row_container);
     }
+    row_container = document.createElement('DIV');
+    row_container.classList.add('container');
+    [25,50,0].forEach(i =>{
+        var btn = document.createElement("BUTTON");
+        btn.innerHTML = (i).toString();
+        btn.addEventListener('click', throw_dart)
+        btn.classList.add('myButton')
+        row_container.appendChild(btn);
+    });
+    button_container.appendChild(row_container);
+
 }
 
 function throw_dart() {
@@ -34,10 +45,11 @@ function throw_dart() {
         minus_score = active_player.round_score.split('-').reduce(function (previous, current) {
             return previous - current;
         }, 0);;
-        active_player.score = active_player.score + minus_score
+        active_player.score = (parseInt(active_player.score) + minus_score).toString()
         active_player.round_score = ''
     }
     active_player.round_score = active_player.round_score + '-' + (parseInt(this.innerHTML) * multiplier).toString()
+    select_multiplier(document.getElementById('single_multiplier'))
     update_players_gui()
 
 }
@@ -80,23 +92,6 @@ function update_players_gui() {
 
     });
     resolve_players_turn();
-    // players_container=document.getElementById('players_container');
-    // while (players_container.firstChild) {
-    //     players_container.removeChild(players_container.firstChild);
-    //   }
-    // for(player in players){
-    //     console.log(player)
-    //     new_player = document.createElement('DIV')
-    //     new_player.id=player.name;
-    //     new_player.classList.add('player_container')
-    //     player_label = document.createElement('INPUT')
-    //     player_label.value=player.name;
-    //     player_score=document.createElement('INPUT')
-    //     player_score.innerHTML=player.score;
-    //     new_player.appendChild(player_label)
-    //     new_player.appendChild(player_score)
-    //     players_container.appendChild(new_player)
-    // }
 }
 
 function change_scrore() {
@@ -109,27 +104,10 @@ function change_scrore() {
 }
 
 function saveItem(name, value) {
-    // var cookie = [
-    //     name,
-    //     '=',
-    //     JSON.stringify(value)
-    // ].join('');
-    // document.cookie = cookie;
     localStorage.setItem(name, JSON.stringify(value))
 }
 
 function readItem(name) {
-    // var nameEQ = name + "=";
-    // var ca = document.cookie.split(';');
-    // for(var i = 0; i < ca.length; i++) {
-    //     var c = ca[i];
-    //     while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-    //     if (c.indexOf(nameEQ) === 0) {
-    //         return JSON.parse(
-    //             c.substring(nameEQ.length, c.length)
-    //         );
-    //     }
-    // }
     return localStorage[name];
 }
 
@@ -139,20 +117,6 @@ function resetPlayers() {
 }
 
 function resolve_players_turn() {
-    // if(document.getElementsByClassName('active_player').length < 1){
-    //     console.log('no active players')
-    //     document.getElementById('players_container').children[1].firstChild.classList.add('active_player')
-    // }
-    // active_player = document.getElementsByClassName('active_player')[0]
-    // console.log('active player is ', active_player)
-    // players.forEach((player) => {
-    //     if (player.name === active_player.innerHTML) {
-    //         if (player.round_score.split('-').length >= 2) {
-    //             active_player.classList.remove('active_player');
-    //             active_player.parentNode.nextSibling.firstChild.classList.add('active_player')
-    //         }
-    //     }
-    // })
     if(active_player == null){
         active_player = players[0];
         document.getElementById('players_container').children[1].classList.add('active_player')
