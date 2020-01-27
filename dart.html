@@ -6,13 +6,6 @@
 </head>
 
 <body>
-    <table id='players_container'>
-        <tr>
-            <th>Name</th>
-            <th>Round score</th>
-            <th>Score</th>
-        </tr>
-    </table>
     <button onclick="add_player()" id='add_player'>+</button>
     <div id='multipler'>
         <button class="selected_multipler" onclick="select_multiplier(this)" id='single_multiplier'>Single</button>
@@ -23,6 +16,9 @@
 
     </div>
     <button onclick="resetPlayers()">Reset Players</button>
+    <div id='players_container' class='score_container'>
+
+    </div>
     <script src='dart.js'></script>
 
 </body>

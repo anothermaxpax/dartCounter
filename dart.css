@@ -40,3 +40,14 @@ td, th {
     flex-flow: row wrap;
     align-items: stretch;
 }
+.vertical_container {
+    display: flex;
+    flex-flow: column;
+}
+.score_container {
+    display: flex;
+    justify-content: space-around;
+}
+.colum_reverse {
+    flex-direction: column-reverse;
+}
