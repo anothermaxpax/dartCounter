@@ -1,0 +1,14 @@
+.parent {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+button {
+    flex: 1 0 21%; /* explanation below */
+    margin: 5px;
+    font-size: xxx-large;
+}
+
+body {
+    font-size: x-large;
+}

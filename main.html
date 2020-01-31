@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="v2.css">
+</head>
+
+<body>
+    <button onclick='add_player(prompt("Please enter your name", "new Player"))' id='add_player'>+</button>
+    <div id='multipler'>
+        <button class="selected_multipler" onclick="select_multiplier(this)" id='single_multiplier'>Single</button>
+        <button onclick="select_multiplier(this)">Double</button>
+        <button onclick="select_multiplier(this)">Tripple</button>
+    </div>
+    <div id="buttonContainer" class="parent">
+
+    </div>
+    <button onclick="resetPlayers()">Reset</button>
+    <div id='players_container' class='score_container'>
+
+    </div>
+    <script src='model.js'></script>
+
+</body>
+
+</html>
