@@ -6,7 +6,7 @@
 </head>
 
 <body>
-    <button onclick='add_player(prompt("Please enter your name", "new Player"))' id='add_player'>+</button>
+    <button onclick='addPlayerGui()' id='addPlayer'>+</button>
     <div id='multipler'>
         <button onclick="selectMultiplier(this)" id ='selectedMultipler'>Single</button>
         <button onclick="selectMultiplier(this)" >Double</button>
@@ -15,8 +15,8 @@
     <div id="buttonContainer" class="parent">
 
     </div>
-    <button onclick="resetPlayers()">Reset</button>
-    <div id='players_container' class='score_container'>
+    <button onclick="resetGameGui()">Reset</button>
+    <div id='playersContainer' class='parent'>
 
     </div>
     <script src='model.js'></script>

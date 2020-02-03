@@ -4,11 +4,28 @@
 }
 
 button {
-    flex: 1 0 21%; /* explanation below */
+    flex: 1 0 21%;
     margin: 5px;
     font-size: xxx-large;
 }
 
 body {
     font-size: x-large;
+}
+
+.scoreContainer {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column-reverse;
+}
+
+
+.scoreButton {
+    flex: 1 0 30%;
+    margin: 5px;
+    font-size: xxx-large;
+}
+
+.activePlayer {
+    background-color: bisque;
 }
