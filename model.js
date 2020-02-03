@@ -4,17 +4,18 @@ let active_player;
 let round = 1;
 let multiplier = 1;
 let starting_points = 301;
-let gameMode = 'Double Out'
+let gameMode = 'DoubleOut'
 
 function playerThrow(multiplier, hitNumber) {
     resolvePlayersTurn();
-    switch(gameMode){
-        case 'Double Out':
-            resolveDoubleOut(active_player, multiplier, hitNumber)
-        default:
-            console.log('game is not implemented yet');
+    if (gameMode == 'DoubleOut'){
+        resolveDoubleOut(active_player, multiplier, hitNumber)
+    }else{
+        console.log('game is not implemented yet');
     }
-
+    // game result show
+    updatePlayersGui();
+    resetMultiplier();
 }
 
 function add_player(_name) {
@@ -40,9 +41,7 @@ function getRemainingPoints(player, currentPoint){
 function resolvePlayersTurn(){
     if(active_player == null){
         active_player = players[0];
-        console.log(players)
     }
-    console.log(active_player)
     if(Math.floor(active_player.throws.length / 3) >= round){
         if(players.indexOf(active_player) == players.length -1 ){
             round += 1;
@@ -82,11 +81,12 @@ function bustedDoubleOut(player){
 
 window.addEventListener('load', ()=>{
     add_player(prompt("Please enter your name", "new Player"));
-    generateButtons()});
+    generateButtons()
+    updatePlayersGui();
+});
 
 function generateButtons() {
-    button_container = document.getElementById('button_container');
-    console.log(button_container)
+    let button_container = document.getElementById('buttonContainer');
     for (let i = 1; i <= 20; i++) {
         let btn = document.createElement("BUTTON");
         btn.innerHTML = i.toString();
@@ -96,12 +96,12 @@ function generateButtons() {
     [25,50,0].forEach(i =>{
         let btn = document.createElement("BUTTON");
         btn.innerHTML = i.toString();
-        btn.addEventListener('onClick', playerThrow(multiplier,hitNumber, true))
+        btn.addEventListener('onClick', playerThrow(multiplier,i))
         button_container.appendChild(btn);
     });
     let btn = document.createElement("BUTTON");
     btn.innerHTML = 'busted';
-    btn.addEventListener('onClick', playerThrow(multiplier,hitNumber))
+    btn.addEventListener('onClick', playerThrow(multiplier,0, true))
     button_container.appendChild(btn);
 
 }
@@ -153,5 +153,30 @@ function updatePlayersGui() {
         new_player.appendChild(player_score);
         new_player.appendChild(player_score_container);
         players_container.appendChild(new_player);
+
     });
+}
+
+function selectMultiplier(btn){
+    let oldMult = document.getElementById('selectedMultipler');
+    if(oldMult !== btn){
+        oldMult.id = '';
+        btn.id = 'selected_multiplier';
+    }
+    multiplier = 1;
+    if (btn.innerHTML == 'Double'){
+        multiplier = 2;
+    }
+    if (btn.innerHTML == 'Tripple'){
+        multiplier = 3;
+    }
+    
+    
+}
+
+function resetMultiplier(){
+    multiplier = 1;
+    let x = document.getElementById('multipler').children[0]
+    console.log(x)
+    selectMultiplier(document.getElementById('multipler').children[0])
 }
