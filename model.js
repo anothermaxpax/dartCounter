@@ -1,15 +1,15 @@
 // Model
 let players = [];
 let activePlayer;
-let round = 1;
+let gameRound = 1;
 let multiplier = 1;
-let startingPoints = 301;
+let gamePoints = 301;
 let gameMode = 'DoubleOut'
 
 function playerThrow(multiplier, hitNumber,busted) {
     resolvePlayersTurn();
     if (gameMode == 'DoubleOut'){
-        resolveDoubleOut(activePlayer, multiplier, hitNumber,busted)
+        resolveDoubleOut(activePlayer, multiplier, hitNumber, gameRound, busted)
     }else{
         console.log('game is not implemented yet');
     }
@@ -19,33 +19,46 @@ function playerThrow(multiplier, hitNumber,busted) {
 }
 
 function addPlayer(_name) {
-    let newPlayer = { name: _name, score: startingPoints, throws: [] };
+    let newPlayer = { name: _name, score: gamePoints, matchRound: {1: {throws: []}} };
     players.push(newPlayer);
 }
 
-function resetGame(_gameMode, _startingPoints) {
+function resetGame(_gameMode, _gamePoints) {
     players = [];
     activePlayer = null;
-    round = 1;
+    gameRound = 1;
     multiplier = 1;
-    startingPoints = startingPoints;
+    gamePoints = gamePoints;
     gameMode = _gameMode
 }
 
-function getRemainingPoints(player, currentPoint){
-    return player.score + player.throws.reduce(function (previous, current){
-        return previous - current;
-    }, 0 ) - currentPoint;
+function getRemainingPointsDoubleOut(player, currentPoint){
+    let summ = 0;
+    for(let i = 1; i <= gameRound; i++){
+        if(player.matchRound[i] != null){
+            if(player.matchRound[i].busted){
+                continue;
+            }
+            summ = summ + player.matchRound[i].throws.reduce(function (previous, current){
+                return previous + current;
+            }, 0 );
+        }
+    }
+    console.log(player.score, summ, currentPoint)
+    return player.score - summ - currentPoint;
 }
 
 function resolvePlayersTurn(){
     if(activePlayer == null){
         activePlayer = players[0];
     }
-    if(Math.floor(activePlayer.throws.length / 3) >= round){
+    if(activePlayer.matchRound[gameRound].throws.length > 2){
         if(players.indexOf(activePlayer) == players.length -1 ){
-            round += 1;
+            gameRound += 1;
             activePlayer = players[0];
+            players.forEach(player =>{
+                player.matchRound[gameRound] = {throws:[]}
+            })
         }else{
             activePlayer = players[players.indexOf(activePlayer) + 1];
         }
@@ -56,31 +69,39 @@ function sortPlayers(player, position){
     players.splice(position, 0, players.splice(players.indexOf(player), 1)[0]);
 }
 
-function resolveDoubleOut(player,multiplier, hitNumber, busted){
+function resolveDoubleOut(player,multiplier, hitNumber, round, busted){
     if (Boolean(busted)){
-        bustedDoubleOut(player)
+        bustedDoubleOut(player, round)
     }else{
-        remain = getRemainingPoints(player, hitNumber * multiplier);
+        remain = getRemainingPointsDoubleOut(player, hitNumber * multiplier);
         if(remain >= 2){
-            player.throws.push(hitNumber * multiplier);
+            player.matchRound[round].throws.push(hitNumber * multiplier);
         } else if(multiplier != 2 || remain != 0){
-            bustedDoubleOut(player)
+            bustedDoubleOut(player, round)
         }else {
             alert(activePlayer.name + ' won the game')
         }
     }
 }
 
-function bustedDoubleOut(player){
-    let i;
-    for(i = 0; i < 3; i++){
-        player.throws[(round - 1) * 3 + i] = 0;
+function bustedDoubleOut(player,round){
+    player.matchRound[round].busted = true;
+}
+
+function getCurrentPoints(player){
+    if(gameMode == 'DoubleOut'){
+        return getRemainingPointsDoubleOut(player,0)
     }
+}
+
+function changePlayerCertainPoint(player, cerRound, cerThrow, point){
+    player.matchRound[cerRound].throws[cerThrow] = point;
 }
 
 // Design and Controller
 
 window.addEventListener('load', ()=>{
+    console.log(document.getElementById('table1'))
     generateButtons();
     addPlayerGui();
 });
@@ -113,36 +134,39 @@ function generateButtons() {
 }
 
 function updatePlayersGui() {
-    if(activePlayer == null){
-        activePlayer = players[0];
-    }
-    playersContainer = document.getElementById('playersContainer');
-    playersContainer.innerHTML = '';
+    playersContainer = document.createElement('tbody');
     players.forEach((player) => {
-        newPlayer = document.createElement('DIV');
+        newPlayer = document.createElement('tr');
         if(player == activePlayer){
             newPlayer.classList.add('activePlayer');
         }
-        newPlayer.id = player.name;
-        playerName = document.createElement('LABEL');
-        playerScore = document.createElement('LABEL');
-        playerScoreContainer = document.createElement('DIV');
-        playerScoreContainer.classList.add('scoreContainer');
-        createScoreTable(player, playerScoreContainer)
+        playerName = document.createElement('td');
         playerName.innerHTML = player.name;
+        playerScore = document.createElement('td');
+        playerScore.innerHTML = getCurrentPoints(player);
+        newPlayer.appendChild(playerName);
+        newPlayer.appendChild(playerScore);
+        for(let i = gameRound;i > 0; i--){
+            roundColum = document.createElement('td');
+            for(let j=0; j < player.matchRound[i].throws.length; j++){
+                scoreButton = document.createElement('BUTTON');
+                scoreButton.innerHTML = player.matchRound[i].throws[j];
+                scoreButton.addEventListener('click', ()=> {
+                    changePlayerCertainPoint(player, i, j, prompt("Change Score?", player.matchRound[i].throws[j]));
+                    scoreButton.innerHTML = player.matchRound[i].throws[j]
+                });
+                roundColum.appendChild(scoreButton)
+            }
+            newPlayer.appendChild(roundColum);
+        }
         if(player.active){
             newPlayer.classList.add('activePlayer');
         }
-        minusScore = player.throws.reduce(function (previous, current) {
-            return previous - current;
-        }, 0);
-        playerScore.innerHTML = player.score + minusScore;
-        newPlayer.appendChild(playerName);
-        newPlayer.appendChild(playerScore);
-        newPlayer.appendChild(playerScoreContainer);
         playersContainer.appendChild(newPlayer);
 
     });
+    document.getElementById('playersContainer').innerHTML = '';
+    document.getElementById('playersContainer').appendChild(playersContainer);
 }
 
 function selectMultiplier(btn){
@@ -166,25 +190,6 @@ function resetMultiplier(){
     multiplier = 1;
     let x = document.getElementById('multipler').children[0]
     selectMultiplier(document.getElementById('multipler').children[0])
-}
-
-function createScoreTable(player, scoreContainer){
-    let i ;
-    for(i = 0;i < round;i++){
-        row = document.createElement('DIV');
-        row.classList.add('parent');
-        let x = (i == round -1 )? player.throws.length - (round - 1) *3 : 3;
-        for(let j=0; j < x; j++){
-            scoreButton = document.createElement('BUTTON');
-            scoreButton.innerHTML = player.throws[i*3 + j];
-            scoreButton.addEventListener('click', ()=> {
-                changePlayerCertainPoint(prompt("Change Score?", scoreButton.innerHTML), i);
-                scoreButton.innerHTML = player.throws[i*3 + j]
-            });
-            row.appendChild(scoreButton)
-        }
-        scoreContainer.appendChild(row);
-    }
 }
 
 function resetGameGui(){
