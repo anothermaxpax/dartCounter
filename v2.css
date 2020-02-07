@@ -29,3 +29,8 @@ body {
 .activePlayer {
     background-color: bisque;
 }
+.columnContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}

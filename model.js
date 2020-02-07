@@ -101,7 +101,6 @@ function changePlayerCertainPoint(player, cerRound, cerThrow, point){
 // Design and Controller
 
 window.addEventListener('load', ()=>{
-    console.log(document.getElementById('table1'))
     generateButtons();
     addPlayerGui();
 });
@@ -147,7 +146,13 @@ function updatePlayersGui() {
         newPlayer.appendChild(playerName);
         newPlayer.appendChild(playerScore);
         for(let i = gameRound;i > 0; i--){
+            if(i<gameRound-2){
+                continue
+            }
             roundColum = document.createElement('td');
+            roundDiv = document.createElement('div');
+            roundColum.appendChild(roundDiv);
+            roundDiv.classList.add('columnContainer')
             for(let j=0; j < player.matchRound[i].throws.length; j++){
                 scoreButton = document.createElement('BUTTON');
                 scoreButton.innerHTML = player.matchRound[i].throws[j];
@@ -155,7 +160,7 @@ function updatePlayersGui() {
                     changePlayerCertainPoint(player, i, j, prompt("Change Score?", player.matchRound[i].throws[j]));
                     scoreButton.innerHTML = player.matchRound[i].throws[j]
                 });
-                roundColum.appendChild(scoreButton)
+                roundDiv.appendChild(scoreButton)
             }
             newPlayer.appendChild(roundColum);
         }
@@ -165,8 +170,9 @@ function updatePlayersGui() {
         playersContainer.appendChild(newPlayer);
 
     });
-    document.getElementById('playersContainer').innerHTML = '';
-    document.getElementById('playersContainer').appendChild(playersContainer);
+    container = document.getElementById('playersContainer');
+    container.innerHTML = '';
+    container.appendChild(playersContainer);
 }
 
 function selectMultiplier(btn){
