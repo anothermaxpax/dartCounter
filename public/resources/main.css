@@ -65,3 +65,12 @@ td, th {
     max-width: 100px;
     height: auto;
 }
+
+.topMid {
+    position: absolute;
+    top: 65%;
+    left: 0px;
+    color: rgb(243, 241, 241);
+    -webkit-text-fill-color:rgb(75, 15, 0);
+    -webkit-text-stroke: 0.5px  rgb(243, 241, 241);
+}

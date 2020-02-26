@@ -5,6 +5,7 @@ let gameRound = 1;
 let multiplier = 1;
 let gamePoints = 301;
 let gameMode = 'DoubleOut'
+let xhr = new XMLHttpRequest();
 
 function playerThrow(multiplier, hitNumber, busted) {
     resolvePlayersTurn();
@@ -79,7 +80,8 @@ function resolveDoubleOut(player, multiplier, hitNumber, round, busted) {
         } else if (multiplier != 2 || remain != 0) {
             bustedDoubleOut(player, round)
         } else {
-            alert(activePlayer.name + ' won the game')
+            player.matchRound[round].throws.push(hitNumber * multiplier);
+            finishGame(activePlayer)
         }
     }
 }
@@ -95,8 +97,11 @@ function getCurrentPoints(player) {
 }
 
 function changePlayerCertainPoint(player, cerRound, cerThrow, point) {
-    console.log("round", cerRound, "throw", cerThrow, point)
     player.matchRound[cerRound].throws[cerThrow] = point;
+}
+
+function finishGame(winner) {
+    finishGameGui(winner.name);
 }
 
 // Design and Controller
@@ -104,6 +109,7 @@ function changePlayerCertainPoint(player, cerRound, cerThrow, point) {
 window.addEventListener('load', () => {
     generateButtons();
     addPlayerGui();
+    registerGui();
 });
 
 function generateButtons() {
@@ -142,36 +148,41 @@ function updatePlayersGui() {
             newPlayer.classList.add('activePlayer');
         }
         let playerAvatar = document.createElement('img');
-        playerAvatar.src = 'user.png';
+        playerAvatar.src = 'resources/user.png';
         playerAvatar.classList.add("playerAvatar")
-        let imgInput = document.createElement('input');
-        imgInput.type = 'file';
-        imgInput.accept = 'image/*';
-        imgInput.addEventListener("change", () => {
-            console.log(imgInput);
-            let reader = new FileReader();
-            reader.onload = function (e) {
-                playerAvatar.src = e.target.result;
-            }
-            reader.readAsDataURL(imgInput.files[0]);
-        })
-        imgInput.style.visibility = "hidden";
-        playerAvatar.onclick = () => {
-            imgInput.click();
-        }
-
-        tdAvatar = document.createElement('td');
-        tdAvatar.appendChild(playerAvatar);
-        newPlayer.appendChild(tdAvatar);
-        let playerName = document.createElement('td');
+        let playerName = document.createElement('p');
+        playerName.classList.add("topMid");
         playerName.draggable = true;
         playerName.addEventListener("dragstart", dragStart)
         newPlayer.addEventListener("dragEnter", dragOver)
         newPlayer.addEventListener("ondrop", drop)
         playerName.innerHTML = player.name;
+        let imgInput = document.createElement('input');
+        imgInput.type = 'file';
+        imgInput.accept = 'image/*';
+        imgInput.addEventListener("change", () => {
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                playerAvatar.src = e.target.result;
+            }
+            reader.readAsDataURL(imgInput.files[0]);
+            registerGui(player.name, imgInput.files[0]);
+        })
+        imgInput.style.visibility = "hidden";
+        playerAvatar.onclick = () => {
+            imgInput.click();
+        }
+        divAvatar = document.createElement("div");
+        divAvatar.style.position = "relative";
+        divAvatar.style["text-align"] = "center";
+        divAvatar.appendChild(playerName);
+        divAvatar.appendChild(playerAvatar);
+        tdAvatar = document.createElement('td');
+        tdAvatar.appendChild(divAvatar);
+        newPlayer.appendChild(tdAvatar);
+
         let playerScore = document.createElement('td');
         playerScore.innerHTML = getCurrentPoints(player);
-        newPlayer.appendChild(playerName);
         newPlayer.appendChild(playerScore);
         for (let i = gameRound; i > 0; i--) {
             if (i < gameRound - 2) {
@@ -257,4 +268,38 @@ function dragOver(event) {
 
 function drop(event) {
     console.log("drop", event)
+}
+
+function postResults() {
+    xhr.open("POST", "http://" + window.location.hostname + "/api/results", true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && parseInt(xhr.status) < 400) {
+            res = JSON.parse(xhr.responseText);
+        }
+    };
+    data = JSON.stringify({ "players": JSON.stringify(players), "gameRound": gameRound, "gamePoints": gamePoints, "gameMode": gameMode });
+    xhr.send(data);
+}
+
+function registerGui(name, image) {
+    let fd = new FormData();
+    console.log(fd)
+    // fd.append("avatar", image);
+    fd.append("name", "mystuff");
+    console.log(fd)
+    // fetch('/api/register', {
+    //     method: 'Post',
+    //     body: fd
+    // })
+    // .then(res => res.json())
+    // .then(json => console.log(json))
+    // .catch(err => console.error(err));
+    
+}
+
+function finishGameGui(winner) {
+    postResults()
+    alert(winner + " won the game");
+    resetGameGui();
 }
