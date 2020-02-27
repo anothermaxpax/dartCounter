@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<head>
+    <link rel='stylesheet' type='text/css' href='resources/main.css'>
+</head>
+
+<body>
+    <button onclick='addPlayerGui()' id='addPlayer'>+</button>
+    <div id='multipler'>
+        <button onclick='selectMultiplier(this)' id ='selectedMultiplier'>Single</button>
+        <button onclick='selectMultiplier(this)' >Double</button>
+        <button onclick='selectMultiplier(this)' >Tripple</button>
+    </div>
+    <div id='buttonContainer' class='parent'>
+    </div>
+    <button onclick='resetGameGui()'>Reset</button>
+    <table id='playersContainer' class='parent'>
+    </table>
+    <script src='resources/model.js'></script>
+
+</body>
+
+</html>
