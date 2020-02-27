@@ -109,7 +109,6 @@ function finishGame(winner) {
 window.addEventListener('load', () => {
     generateButtons();
     addPlayerGui();
-    registerGui();
 });
 
 function generateButtons() {
@@ -161,12 +160,12 @@ function updatePlayersGui() {
         imgInput.type = 'file';
         imgInput.accept = 'image/*';
         imgInput.addEventListener("change", () => {
+            registerGui(player.name, imgInput.files[0]);
             let reader = new FileReader();
             reader.onload = function (e) {
                 playerAvatar.src = e.target.result;
             }
             reader.readAsDataURL(imgInput.files[0]);
-            registerGui(player.name, imgInput.files[0]);
         })
         imgInput.style.visibility = "hidden";
         playerAvatar.onclick = () => {
@@ -270,36 +269,38 @@ function drop(event) {
     console.log("drop", event)
 }
 
-function postResults() {
-    xhr.open("POST", "http://" + window.location.hostname + "/api/results", true);
+function postData(url, data) {
+    xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && parseInt(xhr.status) < 400) {
-            res = JSON.parse(xhr.responseText);
+            return JSON.parse(xhr.responseText);
         }
     };
-    data = JSON.stringify({ "players": JSON.stringify(players), "gameRound": gameRound, "gamePoints": gamePoints, "gameMode": gameMode });
     xhr.send(data);
 }
 
-function registerGui(name, image) {
+function registerGui(name, avatar) {
+    // let data = {};
+    // data.name = name;
+    // data.avatar = avatar;
+    // console.log(data)
+    // console.log(postData("/api/register", data))
     let fd = new FormData();
-    console.log(fd)
-    // fd.append("avatar", image);
-    fd.append("name", "mystuff");
-    console.log(fd)
-    // fetch('/api/register', {
-    //     method: 'Post',
-    //     body: fd
-    // })
-    // .then(res => res.json())
-    // .then(json => console.log(json))
-    // .catch(err => console.error(err));
-    
+    fd.enctyp = "multipart/form-data"
+    fd.append("name", name);
+    fd.append("avatar", avatar);
+    xhr.open("POST", "/api/register", true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && parseInt(xhr.status) < 400) {
+            console.log(JSON.parse(xhr.responseText));
+        }
+    };
+    xhr.send(fd);
 }
 
 function finishGameGui(winner) {
-    postResults()
+    console.log(postResults("/api/results", JSON.stringify({ "players": JSON.stringify(players), "gameRound": gameRound, "gamePoints": gamePoints, "gameMode": gameMode })));
     alert(winner + " won the game");
     resetGameGui();
 }
