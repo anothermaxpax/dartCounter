@@ -147,7 +147,11 @@ function updatePlayersGui() {
             newPlayer.classList.add('activePlayer');
         }
         let playerAvatar = document.createElement('img');
-        playerAvatar.src = 'resources/user.png';
+        if(player.img != null){
+            playerAvatar.src = player.img.result;
+        }else{
+            playerAvatar.src = 'resources/user.png';
+        }
         playerAvatar.classList.add("playerAvatar")
         let playerName = document.createElement('p');
         playerName.classList.add("topMid");
@@ -163,7 +167,8 @@ function updatePlayersGui() {
             registerGui(player.name, imgInput.files[0]);
             let reader = new FileReader();
             reader.onload = function (e) {
-                playerAvatar.src = e.target.result;
+                player.img = e.target
+                playerAvatar.src = player.img.result;
             }
             reader.readAsDataURL(imgInput.files[0]);
         })
