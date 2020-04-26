@@ -6,12 +6,12 @@
 button {
     flex: 1 0 21%;
     margin: 5px;
-    /* font-size: xxx-large; */
+    font-size: xx-large;
 }
 
-/* body {
+body {
     font-size: large;
-} */
+}
 
 .scoreContainer {
     display: flex;
@@ -25,7 +25,7 @@ td, th {
 .scoreButton {
     flex: 1 0 30%;
     margin: 5px;
-    /* font-size: large; */
+    font-size: large;
 }
 
 .activePlayer {
@@ -74,3 +74,23 @@ td, th {
     -webkit-text-fill-color:rgb(75, 15, 0);
     -webkit-text-stroke: 0.5px  rgb(243, 241, 241);
 }
+
+#overlay {
+    position: fixed; /* Sit on top of the page content */
+    display: none; /* Hidden by default */
+    width: 100%; /* Full width (cover the whole page) */
+    height: 100%; /* Full height (cover the whole page) */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+    z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+    cursor: pointer; /* Add a pointer on hover */
+    font-size: xxx-large;
+  }
+  #overlay > p{
+      top:50%;
+      left: 50%;
+      font-size: 5em;
+  }
